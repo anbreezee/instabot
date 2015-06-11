@@ -1,0 +1,32 @@
+body {
+    width: 310px;
+    height: 500px;
+    padding: 10px;
+}
+.control-input {
+    width: 290px;
+    display: inline-block;
+}
+h5 {
+    font-size: 11px;
+    text-align: right;
+    margin-bottom: 10px;
+    font-style: italic;
+    text-transform: uppercase;
+    padding-right: 3px;
+}
+hr {
+    border-top-color: #999;
+    margin: 20px 0px 10px 0px;
+}
+textarea.log {
+    font-size: 10px;
+    font-family: monospace;
+    resize: none;
+    width: 100%;
+    height: 140px;
+    margin-top: 20px;
+    background-color: #eee;
+    border: 1px solid #999;
+    padding: 5px;
+}
