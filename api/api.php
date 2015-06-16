@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 header("Access-Control-Allow-Origin: *");
 
 define('CLIENT_ID', '');
@@ -13,7 +16,7 @@ if (isset($_GET['mode'])) {
 }
 
 function find_user($nickname) {
-    $query = http_build_query(['q' => $nickname, 'access_token' => ACCESS_TOKEN]);
+    $query = http_build_query(array('q' => $nickname, 'access_token' => ACCESS_TOKEN));
     $endpoint = 'https://api.instagram.com/v1/users/search';
     $url = $endpoint . '?' . $query;
 
@@ -27,18 +30,37 @@ function find_user($nickname) {
     echo $data;
 }
 
-function get_user_followers($user_id) {
-    $user_id = (int)$user_id;
-    $query = http_build_query(['access_token' => ACCESS_TOKEN]);
-    $endpoint = 'https://api.instagram.com/v1/users/' . $user_id . '/followed-by';
-    $url = $endpoint . '?' . $query;
-
+function get_followers_by_url($url) {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     $data = curl_exec($ch);
     curl_close($ch);
+    return $data;
+}
 
+function get_user_followers($user_id) {
+    $user_id = (int)$user_id;
+    $query = http_build_query(array('access_token' => ACCESS_TOKEN));
+    $endpoint = 'https://api.instagram.com/v1/users/' . $user_id . '/followed-by';
+    $url = $endpoint . '?' . $query;
+
+    $followers = array();
+    do {
+        $data = get_followers_by_url($url);
+        $data = json_decode($data, true);
+        foreach ($data['data'] as $follower) {
+            $followers[] = $follower;
+        }
+        if (isset($data['pagination']) && isset($data['pagination']['next_url'])) {
+            $url = $data['pagination']['next_url'];
+        } else {
+            $url = null;
+        }
+    } while ($url != null);
+
+    $data = array('data' => $followers);
+    $data = json_encode($data);
     header('Content-Type: application/json');
     echo $data;
 }
