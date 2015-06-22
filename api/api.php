@@ -1,11 +1,16 @@
 <?php
+/**
+    pass.php содержит две константы: CLIENT_ID и ACCESS_TOKEN определенные как:
+    define('CLIENT_ID', '...');
+    define('ACCESS_TOKEN', '...');
+    где вместо ... соответствующий значения
+*/
+require('./pass.php');
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header("Access-Control-Allow-Origin: *");
-
-define('CLIENT_ID', '');
-define('ACCESS_TOKEN', '');
 
 if (isset($_GET['mode'])) {
     if ($_GET['mode'] == 'search' && isset($_GET['nickname'])) {
@@ -42,7 +47,7 @@ function get_followers_by_url($url) {
 function get_user_followers($user_id) {
     $user_id = (int)$user_id;
     $query = http_build_query(array('access_token' => ACCESS_TOKEN));
-    $endpoint = 'https://api.instagram.com/v1/users/' . $user_id . '/followed-by';
+    $endpoint = 'https://api.instagram.com/v1/users/' . $user_id . '/follows';
     $url = $endpoint . '?' . $query;
 
     $followers = array();
