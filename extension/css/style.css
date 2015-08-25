@@ -9,11 +9,11 @@ body {
 }
 h5 {
     font-size: 11px;
-    text-align: right;
+    text-align: left;
     margin-bottom: 10px;
     font-style: italic;
     text-transform: uppercase;
-    padding-right: 3px;
+    padding-left: 3px;
 }
 hr {
     border-top-color: #999;
@@ -29,4 +29,10 @@ textarea.log {
     background-color: #eee;
     border: 1px solid #999;
     padding: 5px;
+}
+
+.radio {
+	display: inline-block;
+	padding-right: 10px;
+	margin: 0;
 }
