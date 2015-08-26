@@ -11,7 +11,7 @@
 	</head>
 	<body>
 		<h5>Application Settings</h5>
-		<div class="form-group">
+		<div class="input-group">
 			<div class="control-input">
 				<input type="text" class="form-control" id="nickname" placeholder="Your Nickname" value="anbreezee" /><!--stoneguardru">-->
 			</div>
@@ -23,19 +23,43 @@
 			</div>
 		</div>
 		-->
-		<h5>Subscription to ...</h5>
+		<br>
+		<h5>Subscribe to ...</h5>
 		<div class="form-group">
 			<div class="control-input">
 				<div class="radio">
 					<label>
-						<input type="radio" name="objects" id="objects" value="following" checked>
-						Подписки
+						<input type="radio" name="objects" id="objects" value="followed_by" checked>
+						Followed-by
 					</label>
 				</div>
 				<div class="radio">
 					<label>
 						<input type="radio" name="objects" id="objects" value="followers">
-						Подписчики
+						Followers
+					</label>
+				</div>
+			</div>
+		</div>
+		<h5>Subscription Mode</h5>
+		<div class="form-group">
+			<div class="control-input">
+				<div class="radio">
+					<label>
+						<input type="radio" name="subscriptionMode" id="subscriptionMode" value="manual" data-placeholder="Users" checked>
+						Manual
+					</label>
+				</div>
+				<div class="radio">
+					<label>
+						<input type="radio" name="subscriptionMode" id="subscriptionMode" value="url" data-placeholder="URL Address">
+						By URL
+					</label>
+				</div>
+				<div class="radio">
+					<label>
+						<input type="radio" name="subscriptionMode" id="subscriptionMode" value="auto" data-placeholder="Root User">
+						Automatic
 					</label>
 				</div>
 			</div>
@@ -56,6 +80,9 @@
 		</div>
 		<div class="form-group">
 			<textarea readonly class="log" id="log">Welcome to Instabot</textarea>
+		</div>
+		<div class="input-group" style="width: 100%; text-align: center;">
+			<button type="submit" id="stop" class="btn btn-large" disabled="disabled">Stop Process</button>
 		</div>
 	</body>
 </html>
