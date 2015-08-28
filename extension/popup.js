@@ -1,10 +1,15 @@
 $(function () {
 var followerCounter = 0;
-var subsPerRound = [15, 20];
+var subsPerRound = [45, 70];
 var intervalBetweenRounds = [15 * 1000 * 60, 20 * 1000 * 60];
 var hTimeout;
 var subscribeMode;
 var subscriptionMode;
+var autoSubscribers = [];
+var autoIndex = 0;
+var maxAutoSubscribersPerRound = 5;
+var maxAutoSubscribers = 200;
+var action;
 
 var logIt = function (message) {
 	$('#log').val($('#log').val() + message + "\r\n");
@@ -77,10 +82,14 @@ var getUserFollowers = function (user, callback) {
 		logIt('request: followers for ' + data.id);
 
 		mode = 'followers';
-		if (subscribeMode == followed_by) {
+		if (subscribeMode == 'followed_by') {
 			mode = 'following';
 		}
-		$.get(appInfo.apiurl, { mode: subscribeMode, user_id: data.id })
+		if (action == 'unsubscribe') {
+			mode = 'following';
+		}
+
+		$.get(appInfo.apiurl, { mode: mode, user_id: data.id })
 			.done(function (res) {
 				if (res.data.length === 0) {
 					logIt('Followers not found');
@@ -100,24 +109,53 @@ var _subscribeTo = function (followers, index, callback) {
 		return callback();
 	}
 	logIt('user: ' + followers[index].username);
-	gotoUrl('http://www.instagram.com/' + followers[index].username, function () {
 
-		var timeout = timeToLunch();
-		if (timeout === 0) {
-			timeout = 3000;
-		}
+	if (subscriptionMode == 'auto' && autoSubscribers[autoIndex].length < maxAutoSubscribersPerRound) {
+		console.log(followers[index].username);
+		getUserFollowers(followers[index].username, function (err, data) {
+			if (data != undefined && data.length < maxAutoSubscribers) {
+				autoSubscribers[autoIndex].push(followers[index].username);
+				console.log(autoSubscribers);
+			}
+			gotoUrl('http://www.instagram.com/' + followers[index].username, function () {
 
-		hTimeout = setTimeout(function () {
-			var queryInfo = { active: true, currentWindow: true };
-			chrome.tabs.query(queryInfo, function (tabs) {
-				var tab = tabs[0];
-				chrome.tabs.executeScript(tab.id, {code: "var button=document.getElementsByClassName('-cx-PRIVATE-FollowButton__button');if(button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__success')==-1){button[0].click()}"});
+				var timeout = timeToLunch();
+				if (timeout === 0) {
+					timeout = 3000;
+				}
+
 				hTimeout = setTimeout(function () {
-					_subscribeTo(followers, (index + 1), callback);
-				}, 1000);
+					var queryInfo = { active: true, currentWindow: true };
+					chrome.tabs.query(queryInfo, function (tabs) {
+						var tab = tabs[0];
+						chrome.tabs.executeScript(tab.id, { code: "var button=document.getElementsByClassName('-cx-PRIVATE-FollowButton__button');if(button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__success')==-1){button[0].click()}" });
+						hTimeout = setTimeout(function () {
+							_subscribeTo(followers, (index + 1), callback);
+						}, 1000);
+					});
+				}, timeout);
 			});
-		}, timeout);
-	});
+		})
+	} else {
+		gotoUrl('http://www.instagram.com/' + followers[index].username, function () {
+
+			var timeout = timeToLunch();
+			if (timeout === 0) {
+				timeout = 3000;
+			}
+
+			hTimeout = setTimeout(function () {
+				var queryInfo = { active: true, currentWindow: true };
+				chrome.tabs.query(queryInfo, function (tabs) {
+					var tab = tabs[0];
+					chrome.tabs.executeScript(tab.id, { code: "var button=document.getElementsByClassName('-cx-PRIVATE-FollowButton__button');if(button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__success')==-1){button[0].click()}" });
+					hTimeout = setTimeout(function () {
+						_subscribeTo(followers, (index + 1), callback);
+					}, 1000);
+				});
+			}, timeout);
+		});
+	}
 };
 
 var _unsubscribeFromFollower = function (followers, index, callback) {
@@ -153,6 +191,19 @@ var _unsubscribeFromFollower = function (followers, index, callback) {
 
 var _subscribe = function (users, index, callback) {
 	if (index >= users.length) {
+		if (subscriptionMode == 'auto') {
+			console.log(autoSubscribers);
+			console.log(autoIndex);
+			if (autoSubscribers[autoIndex].length > 0) {
+				logIt('Found ' + autoSubscribers[autoIndex].length + ' auto users:');
+				for (var i in autoSubscribers[autoIndex]) {
+					logIt(' > ' + autoSubscribers[autoIndex][i]);
+				}
+				autoIndex++;
+				autoSubscribers[autoIndex] = [];
+				_subscribe(autoSubscribers[autoIndex - 1], 0, callback);
+			}
+		}
 		return callback();
 	}
 	getUserFollowers(users[index], function (err, data) {
@@ -169,9 +220,16 @@ var _subscribe = function (users, index, callback) {
 };
 
 var subscribe = function () {
+	action = 'subscribe';
 	if (subscriptionMode == 'manual' || subscriptionMode == 'auto') {
 		var users = $('#subscribeUsers').val();
 		users = users.split(/[ ,]+/);
+		autoSubscribers[0] = [];
+		autoIndex = 0;
+		followerCounter = 0;
+		_subscribe(users, 0, function () {
+			logIt('Finish!');
+		});
 	} else if (subscriptionMode == 'url') {
 		var url = $('#subscribeUsers').val();
 		$.get(url)
@@ -182,22 +240,25 @@ var subscribe = function () {
 				}
 				var users = res.split(/[ ,]+/);
 				logIt('Users: total ' + users.length);
+				autoSubscribers[0] = [];
+				autoIndex = 0;
+				followerCounter = 0;
+				_subscribe(users, 0, function () {
+					logIt('Finish!');
+				});
 			})
 			.fail(function (err) {
-				logIt(err);
+				logIt(err.responseText);
 				return;
 			});
 	}
-	followerCounter = 0;
-	_subscribe(users, 0, function () {
-		logIt('Finish!');
-	});
 };
 
 var unsubscribeFollowers = function () {
 	var appInfo = getAppInfo();
 	// var number = $('#unsubscribeNumber').val();
 	followerCounter = 0;
+	action = 'unsubscribe';
 	getUserFollowers(appInfo.nickname, function (err, data) {
 		var number = data.length;
 		$('#unsubscribeNumber').data('number', number);
