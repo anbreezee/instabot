@@ -2,7 +2,7 @@ $(function () {
 
 // Round mode variables
 var followerCounter = 0;
-var subsPerRound = [45, 70];
+var subsPerRound = [15, 20];
 var intervalBetweenRounds = [15 * 1000 * 60, 20 * 1000 * 60];
 
 // Common variables
