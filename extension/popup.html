@@ -10,38 +10,37 @@
 		<script src="popup.js"></script>
 	</head>
 	<body>
-		<h5>Application Settings</h5>
+		<h5>Общие настройки</h5>
 		<div class="input-group">
 			<div class="control-input">
-				<input type="text" class="form-control" id="nickname" placeholder="Your Nickname" value="anbreezee" /><!--stoneguardru">-->
+				<input type="text" class="form-control" id="nickname" placeholder="nickname" value="stoneguardru">
 			</div>
 		</div>
 		<!--
 		<div class="form-group">
 			<div class="control-input">
-				<input type="text" class="form-control" id="apiurl" placeholder="API URL" value="http://188.166.7.99:8082/instabot/api.php">
+				<input type="text" class="form-control" id="apiurl" placeholder="API URL" value="">
 			</div>
 		</div>
 		-->
-		<br>
-		<h5>Subscribe to ...</h5>
+		<h5>Подписаться на ...</h5>
 		<div class="form-group">
 			<div class="control-input">
 				<div class="radio">
 					<label>
 						<input type="radio" name="objects" id="objects" value="followed_by" checked>
-						Followed-by
+						подписки
 					</label>
 				</div>
 				<div class="radio">
 					<label>
 						<input type="radio" name="objects" id="objects" value="followers">
-						Followers
+						подписчиков
 					</label>
 				</div>
 			</div>
 		</div>
-		<h5>Subscription Mode</h5>
+		<h5>Режим подписки</h5>
 		<div class="form-group">
 			<div class="control-input">
 				<div class="radio">
@@ -67,22 +66,21 @@
 		<div class="input-group">
 			<input type="text" class="form-control" id="subscribeUsers" placeholder="Users">
 			<span class="input-group-btn">
-				<button type="submit" id="subscribe" class="btn btn-success">Subscribe</button>
+				<button type="submit" id="subscribe" class="btn btn-success">Подписаться</button>
 			</div>
 		</div>
-		<br>
-		<h5>Unsubscription from followers</h5>
+		<h5>Отписка</h5>
 		<div class="input-group">
-			<input type="text" class="form-control" id="unsubscribeNumber" placeholder="Number of followers" disabled>
+			<input type="text" class="form-control" id="unsubscribeNumber" placeholder="Количество подписчиков" disabled>
 			<span class="input-group-btn">
-				<button type="submit" id="unsubscribe" class="btn btn-danger">Unsubscribe</button>
+				<button type="submit" id="unsubscribe" class="btn btn-danger">Отписаться</button>
 			</span>
 		</div>
 		<div class="form-group">
 			<textarea readonly class="log" id="log">Welcome to Instabot</textarea>
 		</div>
 		<div class="input-group" style="width: 100%; text-align: center;">
-			<button type="submit" id="stop" class="btn btn-large" disabled="disabled">Stop Process</button>
+			<button type="submit" id="stop" class="btn btn-large" disabled="disabled">Остановить</button>
 		</div>
 	</body>
 </html>

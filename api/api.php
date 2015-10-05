@@ -57,18 +57,23 @@ function get_user_followers($user_id, $followed_by = false) {
 	$url = $endpoint . '?' . $query;
 
 	$followers = array();
+	$breakpoint = false;
 	do {
 		$data = get_followers_by_url($url);
 		$data = json_decode($data, true);
 		foreach ($data['data'] as $follower) {
 			$followers[] = $follower;
 		}
+
 		if (isset($data['pagination']) && isset($data['pagination']['next_url'])) {
 			$url = $data['pagination']['next_url'];
 		} else {
 			$url = null;
 		}
-	} while ($url != null);
+
+		$breakpoint = (count($followers) > 200);
+	} while ($url != null && !$breakpoint);
+
 
 	$data = array('data' => $followers);
 	$data = json_encode($data);
