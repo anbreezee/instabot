@@ -144,7 +144,7 @@ var _subscribeTo = function (users, index, callback) {
 						var queryInfo = { active: true, currentWindow: true };
 						chrome.tabs.query(queryInfo, function (tabs) {
 							var tab = tabs[0];
-							chrome.tabs.executeScript(tab.id, { code: "var button=document.getElementsByClassName('-cx-PRIVATE-FollowButton__button');if(button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__success')==-1){button[0].click()}" });
+							chrome.tabs.executeScript(tab.id, { code: "var button=document.getElementsByClassName('-cx-PRIVATE-FollowButton__button');if(button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__success')==-1 && button[0].className.replace(/[\\n\\t]/g, ' ').indexOf('-cx-PRIVATE-IGButton__neutral')==-1){button[0].click()}" });
 							if (!processInterrupted) {
 								hTimeout = setTimeout(function () {
 									_subscribeTo(users, (index + 1), callback);
@@ -229,6 +229,7 @@ var _subscribe = function (users, index, callback) {
 				autoIndex++;
 				autoSubscribers[autoIndex] = [];
 				_subscribe(autoSubscribers[autoIndex - 1], 0, callback);
+				return;
 			}
 		}
 		return callback();
